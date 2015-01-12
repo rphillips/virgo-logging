@@ -1,5 +1,5 @@
 return {
-  name = "rphillips/virgo-logging",
+  name = "rphillips/logging",
   version = "0.1.0",
   description = "Logging Library",
   author = "Ryan Phillips <ryan.phillips@rackspace.com>",
