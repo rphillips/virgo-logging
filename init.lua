@@ -163,5 +163,4 @@ exports.StderrLogger = StderrLogger
 -- Sets up exports[LOGGER_LEVELS] for easy logging
 exports.init = init
 
---local ll = StderrLogger:new()
---init(ll)
+init(StderrLogger:new())
