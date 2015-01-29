@@ -69,6 +69,8 @@ function Logger:initialize(options)
   self.log_level = self.options.log_level or self.LEVELS['warning']
 end
 
+function Logger:rotate() end
+
 function Logger:_log_buf(str)
   self:write(str)
 end
@@ -115,25 +117,69 @@ function FileLogger:_write(data, encoding, callback)
 end
 
 function FileLogger:rotate()
+  local reopenCallback
+  
+  function reopenCallback()
+    self._stream:uncork()
+    self:emit('rotated')
+  end
+
   self._stream:cork() -- buffer writes
-  self._stream:open() -- reopen
-  self:once('open', utils.bind(self._stream.uncork, self._stream)) -- uncork
+  self._stream:open() -- reopen file
+  self._stream:once('open', reopenCallback)
 end
 
 -------------------------------------------------------------------------------
 
-local StderrLogger = Logger:extend()
-function StderrLogger:initialize(options)
-  options = options or { fd = 2 }
+--[[
+options:
+  fd: {integer?} file descriptor
+--]]
+
+local StdoutLogger = Logger:extend()
+function StdoutLogger:initialize(options)
+  options = options or {}
+  options.fd = options.fd or 1
   Logger.initialize(self, options)
-  self._stream = fs.WriteStream:new(self._path, self.options)
+  self._stream = fs.WriteStream:new(nil, self.options)
 end
 
-function StderrLogger:close()
+function StdoutLogger:close()
   self._stream:_end()
 end
 
-function StderrLogger:_write(data, encoding, callback)
+function StdoutLogger:_write(data, encoding, callback)
+  self._stream:write(data, encoding, callback)
+end
+
+-------------------------------------------------------------------------------
+
+--[[
+  Detects if a path is passed in and enables file logging, or uses stdout.
+  options: {table}
+    path: {string?} filepath to use logging
+--]]
+local StdoutFileLogger = Logger:extend()
+function StdoutFileLogger:initialize(options)
+  options = options or {}
+  Logger.initialize(self, options)
+  if options.path then
+    self._stream = FileLogger:new(options)
+  else
+    self._stream = StdoutLogger:new(options)
+  end
+  self._stream:on('rotated', utils.bind(self.emit, self, 'rotated'))
+end
+
+function StdoutFileLogger:close()
+  self._stream:_end()
+end
+
+function StdoutFileLogger:rotate()
+  self._stream:rotate()
+end
+
+function StdoutFileLogger:_write(data, encoding, callback)
   self._stream:write(data, encoding, callback)
 end
 
@@ -145,11 +191,16 @@ local function init(stream)
     exports[k .. 'f'] = utils.bind(stream._logf, stream, i)
     exports[k:upper()] = i
   end
-
   exports.log = utils.bind(stream._log, stream)
+  exports.rotate = utils.bind(stream.rotate, stream)
 end
 
 -------------------------------------------------------------------------------
+
+exports.LEVELS = Logger.LEVELS
+
+-- Default Logger
+exports.DefaultLogger = StdoutLogger:new()
 
 -- Base Logger
 exports.Logger = Logger
@@ -158,9 +209,12 @@ exports.Logger = Logger
 exports.FileLogger = FileLogger
 
 -- Stderr Logger
-exports.StderrLogger = StderrLogger
+exports.StdoutLogger = StdoutLogger
+
+-- Stderr File Logger
+exports.StdoutFileLogger = StdoutFileLogger
 
 -- Sets up exports[LOGGER_LEVELS] for easy logging
 exports.init = init
 
-init(StderrLogger:new())
+init(exports.DefaultLogger)
