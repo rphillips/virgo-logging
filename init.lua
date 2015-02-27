@@ -141,7 +141,7 @@ function StdoutLogger:initialize(options)
   options = options or {}
   options.fd = options.fd or 1
   Logger.initialize(self, options)
-  self._stream = fs.WriteStream:new(nil, self.options)
+  self._stream = fs.WriteStreamSync:new(nil, self.options)
 end
 
 function StdoutLogger:close()
