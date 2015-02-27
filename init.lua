@@ -13,7 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 --]]
-local Writable = require('stream_writable').Writable
+local Writable = require('stream').Writable
 local fs = require('fs')
 local format = require('string').format
 local los = require('los')
@@ -141,7 +141,7 @@ function StdoutLogger:initialize(options)
   options = options or {}
   options.fd = options.fd or 1
   Logger.initialize(self, options)
-  self._stream = fs.WriteStream:new(nil, self.options)
+  self._stream = fs.WriteStreamSync:new(nil, self.options)
 end
 
 function StdoutLogger:close()
