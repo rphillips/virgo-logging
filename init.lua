@@ -66,7 +66,7 @@ Logger.REVERSE_LEVELS = reverseMap(Logger.LEVELS)
 function Logger:initialize(options)
   Writable.initialize(self)
   self.options = options or {}
-  self.log_level = self.options.log_level or self.LEVELS['warning']
+  self.log_level = self.options.log_level or self.LEVELS['info']
 end
 
 function Logger:rotate() end
