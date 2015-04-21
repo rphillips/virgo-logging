@@ -1,9 +1,9 @@
 return {
   name = "rphillips/logging",
-  version = "0.1.4",
+  version = "1.0.0",
   description = "Logging Library",
   author = "Ryan Phillips <ryan.phillips@rackspace.com>",
-  contributors = { },
   dependencies = {
+    "luvit/luvit@2.1.0",
   },
 }

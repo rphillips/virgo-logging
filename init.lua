@@ -112,8 +112,8 @@ function FileLogger:close()
   self._stream:_end()
 end
 
-function FileLogger:_write(data, encoding, callback)
-  self._stream:write(data, encoding, callback)
+function FileLogger:_write(data, callback)
+  self._stream:write(data, callback)
 end
 
 function FileLogger:rotate()
@@ -148,8 +148,8 @@ function StdoutLogger:close()
   self._stream:_end()
 end
 
-function StdoutLogger:_write(data, encoding, callback)
-  self._stream:write(data, encoding, callback)
+function StdoutLogger:_write(data, callback)
+  self._stream:write(data, callback)
 end
 
 -------------------------------------------------------------------------------
@@ -179,8 +179,8 @@ function StdoutFileLogger:rotate()
   self._stream:rotate()
 end
 
-function StdoutFileLogger:_write(data, encoding, callback)
-  self._stream:write(data, encoding, callback)
+function StdoutFileLogger:_write(data, callback)
+  self._stream:write(data, callback)
 end
 
 -------------------------------------------------------------------------------

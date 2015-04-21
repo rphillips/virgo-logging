@@ -33,7 +33,7 @@ require('tap')(function(test)
     self._buffer = {}
   end
   
-  function BufferLogger:_write(data, encoding, callback)
+  function BufferLogger:_write(data, callback)
     table.insert(self._buffer, data)
     callback()
   end
@@ -49,7 +49,7 @@ require('tap')(function(test)
     logger.warning('and one man in his time plays many parts, his')
     logger.info('acts being seven ages.')
     logger.debug('William Shakespeare')
-    assert(#lg._buffer == 4)
+    assert(#lg._buffer == 5)
 
     lg = BufferLogger:new({ log_level = logger.LEVELS['everything'] })
     logger.init(lg)
@@ -73,7 +73,7 @@ require('tap')(function(test)
     logger.warningf('and one man in his time plays many parts, his')
     logger.infof('acts being seven ages.')
     logger.debugf('William Shakespeare')
-    assert(#lg._buffer == 4)
+    assert(#lg._buffer == 5)
 
     extra_str = "hello world"
 
