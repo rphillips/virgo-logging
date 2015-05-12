@@ -164,6 +164,7 @@ function StdoutFileLogger:initialize(options)
   options = options or {}
   Logger.initialize(self, options)
   if options.path then
+    if not options.flags then options.flags = "a" end
     self._stream = FileLogger:new(options)
   else
     self._stream = StdoutLogger:new(options)
