@@ -181,7 +181,11 @@ function StdoutFileLogger:rotate()
 end
 
 function StdoutFileLogger:_write(data, callback)
-  self._stream:write(data, callback)
+  local function onWriteCallback(...)
+    fs.fstatSync(self.options.fd)
+    callback(...)
+  end
+  self._stream:write(data, onWriteCallback)
 end
 
 -------------------------------------------------------------------------------
