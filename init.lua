@@ -67,12 +67,17 @@ function Logger:initialize(options)
   Writable.initialize(self)
   self.options = options or {}
   self.log_level = self.options.log_level or self.LEVELS['info']
+  self.error_stream = self.options.error_stream
 end
 
 function Logger:rotate() end
 
 function Logger:_log_buf(str)
   self:write(str)
+end
+
+function Logger:_log_error_buf(str)
+  if self.error_stream then self.error_stream:write(str) end
 end
 
 function Logger:_log(level, str)
@@ -90,7 +95,12 @@ function Logger:_log(level, str)
   table.insert(bufs, str)
   table.insert(bufs, EOL)
 
-  self:_log_buf(table.concat(bufs))
+  bufs = table.concat(bufs)
+  self:_log_buf(bufs)
+  
+  if level == self.LEVELS['critical'] then
+    self:_log_error_buf(bufs)
+  end
 end
 
 function Logger:_logf(level, fmt, ...)
@@ -159,6 +169,33 @@ end
 -------------------------------------------------------------------------------
 
 --[[
+options:
+  fd: {integer?} file descriptor
+--]]
+
+local StderrLogger = Logger:extend()
+function StderrLogger:initialize(options)
+  options = options or {}
+  options.fd = options.fd or 2
+  Logger.initialize(self, options)
+  self._stream = fs.WriteStreamSync:new(nil, self.options)
+end
+
+function StderrLogger:close()
+  self._stream:_end()
+end
+
+function StderrLogger:_write(data, callback)
+  local function onWriteCallback(...)
+    fs.fstatSync(self.options.fd)
+    callback(...)
+  end
+  self._stream:write(data, onWriteCallback)
+end
+
+-------------------------------------------------------------------------------
+
+--[[
   Detects if a path is passed in and enables file logging, or uses stdout.
   options: {table}
     path: {string?} filepath to use logging
@@ -166,6 +203,7 @@ end
 local StdoutFileLogger = Logger:extend()
 function StdoutFileLogger:initialize(options)
   options = options or {}
+  options.error_stream = options.error_stream or StderrLogger:new()
   Logger.initialize(self, options)
   if options.path then
     if not options.flags then options.flags = "a" end
