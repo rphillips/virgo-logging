@@ -1,6 +1,6 @@
 return {
   name = "rphillips/logging",
-  version = "1.0.4",
+  version = "1.0.5",
   description = "Logging Library",
   author = "Ryan Phillips <ryan.phillips@rackspace.com>",
   dependencies = {
