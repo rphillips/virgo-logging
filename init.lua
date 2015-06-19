@@ -241,6 +241,7 @@ local function init(stream)
   exports.log = utils.bind(stream._log, stream)
   exports.logf = utils.bind(stream._logf, stream)
   exports.rotate = utils.bind(stream.rotate, stream)
+  exports.instance = stream
 end
 
 -------------------------------------------------------------------------------
