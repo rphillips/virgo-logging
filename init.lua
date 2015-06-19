@@ -72,6 +72,10 @@ end
 
 function Logger:rotate() end
 
+function Logger:setLogLevel(level)
+  self.log_level = level
+end
+
 function Logger:_log_buf(str)
   self:write(str)
 end
