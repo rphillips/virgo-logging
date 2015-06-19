@@ -76,6 +76,10 @@ function Logger:_log_buf(str)
   self:write(str)
 end
 
+function Logger:setLogLevel(level)
+  self.log_level = level
+end
+
 function Logger:_log_error_buf(str)
   if self.error_stream then self.error_stream:write(str) end
 end
