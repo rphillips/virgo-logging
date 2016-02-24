@@ -122,7 +122,7 @@ function FileLogger:initialize(options)
   Logger.initialize(self, options)
   assert(self.options.path, "path is missing")
   self._path = self.options.path
-  self._stream = fs.WriteStream:new(self._path, self.options)
+  self._stream = fs.WriteStreamSync:new(self._path, self.options)
   self:on('finish', utils.bind(self.close, self))
 end
 
