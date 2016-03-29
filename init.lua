@@ -143,8 +143,8 @@ function FileLogger:rotate()
   end
 
   self._stream:cork() -- buffer writes
-  self._stream:open() -- reopen file
   self._stream:once('open', reopenCallback)
+  self._stream:open() -- reopen file
 end
 
 -------------------------------------------------------------------------------
